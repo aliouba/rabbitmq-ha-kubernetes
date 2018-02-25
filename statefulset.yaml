@@ -1,0 +1,101 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  labels:
+    app: imnrabbitmq
+  name: imnrabbitmq
+  namespace: default
+spec:
+  podManagementPolicy: OrderedReady
+  replicas: 3
+  selector:
+    matchLabels:
+      app: imnrabbitmq
+  serviceName: imnrabbitmq
+  template:
+    metadata:
+      labels:
+        app: imnrabbitmq
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: imnrabbitmq
+              topologyKey: kubernetes.io/hostname
+            weight: 1
+      containers:
+      - env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: RABBITMQ_USE_LONGNAME
+          value: "true"
+        - name: RABBITMQ_NODENAME
+          value: rabbit@$(MY_POD_IP)
+        - name: K8S_SERVICE_NAME
+          value: imnrabbitmq
+        - name: RABBITMQ_ERLANG_COOKIE
+          valueFrom:
+            secretKeyRef:
+              key: rabbitmq-erlang-cookie
+              name: imnrabbitmq
+        - name: RABBITMQ_DEFAULT_USER
+          value: guest
+        - name: RABBITMQ_DEFAULT_PASS
+          valueFrom:
+            secretKeyRef:
+              key: rabbitmq-password
+              name: imnrabbitmq
+        - name: RABBITMQ_DEFAULT_VHOST
+          value: /
+        image: rabbitmq:3.7-alpine
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          exec:
+            command:
+            - rabbitmqctl
+            - status
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        name: imnrabbitmq
+        ports:
+        - containerPort: 4369
+          name: epmd
+          protocol: TCP
+        - containerPort: 5672
+          name: amqp
+          protocol: TCP
+        - containerPort: 15672
+          name: http
+          protocol: TCP
+        readinessProbe:
+          exec:
+            command:
+            - rabbitmqctl
+            - status
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        volumeMounts:
+        - mountPath: /var/lib/rabbitmq
+          name: datamq
+        - mountPath: /etc/rabbitmq
+          name: config
+      volumes:
+      - configMap:
+          name: imnrabbitmq
+        name: config
+  volumeClaimTemplates:
+  - metadata:
+      name: datamq
+      annotations:
+        volume.alpha.kubernetes.io/storage-class: managed-premium
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
