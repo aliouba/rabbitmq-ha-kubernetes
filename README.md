@@ -13,13 +13,13 @@ A stoarge class must exist. You d'ont need to setup a new storage class with AKS
 # RUN Rabbitmq HA with Kube tempales
 
 
-[Secret](https://github.com/aliouba/rabbitmq-ha-kubernetes/blob/master/secret.yaml)
+[Secret](https://github.com/aliouba/rabbitmq-ha-kubernetes/blob/master/secret.yaml) : Define rabbitmq erlang cookie and rabbitmq password
 
-[Config Map](https://github.com/aliouba/rabbitmq-ha-kubernetes/blob/master/cm.yaml)
+[Config Map](https://github.com/aliouba/rabbitmq-ha-kubernetes/blob/master/cm.yaml) : Customize rabbitmq cluster configuration 
 
-[Servive](https://github.com/aliouba/rabbitmq-ha-kubernetes/blob/master/svc.yaml)
+[Servive](https://github.com/aliouba/rabbitmq-ha-kubernetes/blob/master/svc.yaml) : this service is only access through the Kube cluster. It exposes 15672, 5672 and 4369 ports.
 
-[Statefulset](https://github.com/aliouba/rabbitmq-ha-kubernetes/blob/master/statefulset.yaml)
+[Statefulset](https://github.com/aliouba/rabbitmq-ha-kubernetes/blob/master/statefulset.yaml). It launches 3 rabbitmq instances (cluster mode). Use this file template to choose your disk size to persist rabbitmq data. A PVC will be created for each rabbitmq instance.
 
 
 # RUN Rabbitmq with Helm (Recommended)
