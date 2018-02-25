@@ -13,8 +13,16 @@ A stoarge class must exist. You d'ont need to setup a new storage class with AKS
 # RUN Rabbitmq HA with Kube tempales
 
 
+[Secret](https://github.com/aliouba/rabbitmq-ha-kubernetes/blob/master/secret.yaml)
 
-# RUN Rabbitmq with Helm
+[Config Map](https://github.com/aliouba/rabbitmq-ha-kubernetes/blob/master/cm.yaml)
+
+[Servive](https://github.com/aliouba/rabbitmq-ha-kubernetes/blob/master/svc.yaml)
+
+[Statefulset](https://github.com/aliouba/rabbitmq-ha-kubernetes/blob/master/statefulset.yaml)
+
+
+# RUN Rabbitmq with Helm (Recommended)
 
 Don't forget to disable RBAC if you use the official helm chart to run rabbitmq on AKS. At the moment RBAC functionality is not available on AKS.
 
